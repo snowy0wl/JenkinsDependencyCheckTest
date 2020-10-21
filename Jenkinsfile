@@ -1,21 +1,15 @@
 pipeline {
-	agent any
-	stages {
-		stage('Checkout SCM') {
-			steps {
-				git '/home/JenkinsDependencyCheckTest'
-			}
-		}
-
-		stage('OWASP DependencyCheck') {
-			steps {
-				dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-			}
-		}
-	}	
-	post {
-		success {
-			dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-		}
-	}
+    agent {
+        docker {
+            image 'node:6-alpine' 
+            args '-p 8080:8080' 
+        }
+    }
+    stages {
+        stage('Build') { 
+            steps {
+                sh 'npm install' 
+            }
+        }
+    }
 }
